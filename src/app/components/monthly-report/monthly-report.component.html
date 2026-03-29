@@ -1,0 +1,148 @@
+<div class="monthly-report">
+  <div class="header">
+    <h2>Monthly Report</h2>
+  </div>
+
+  <div *ngIf="habits.length === 0" class="empty-state">
+    <p>No habits to report on. Create a habit first!</p>
+  </div>
+
+  <div *ngIf="habits.length > 0" class="report-container">
+    <!-- Habit Selection -->
+    <div class="habit-selector">
+      <label for="habitSelect">Select Habit:</label>
+      <select
+        id="habitSelect"
+        [(ngModel)]="selectedHabitId"
+        (change)="selectHabit(selectedHabitId || '')"
+        class="habit-select"
+      >
+        <option *ngFor="let habit of habits" [value]="habit.id">
+          {{ habit.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Report Details -->
+    <div *ngIf="selectedReport" class="report-details">
+      <!-- Main Stats Card -->
+      <div
+        class="stats-card main-card"
+        *ngIf="selectedReport.stats"
+        [style.border-left]="'5px solid ' + 'var(--habit-color)'"
+      >
+        <div class="stats-header">
+          <div>
+            <h3>{{ selectedReport.habitName }}</h3>
+            <p class="month">{{ selectedReport.stats.month }}</p>
+          </div>
+        </div>
+
+        <!-- Overall Progress -->
+        <div class="stat-item main-stat">
+          <div class="stat-label">Completion Rate</div>
+          <div class="stat-value">{{ selectedReport.stats.completionPercentage }}%</div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="getProgressWidth(selectedReport.stats.completedDays, selectedReport.stats.totalDays)"
+              [style.background-color]="getStatusColor(selectedReport.stats.completionPercentage)"
+            ></div>
+          </div>
+          <div class="detail-text">
+            {{ selectedReport.stats.completedDays }} of {{ selectedReport.stats.totalDays }} days completed
+          </div>
+          <div class="status-badge" [style.background-color]="getStatusColor(selectedReport.stats.completionPercentage)">
+            {{ getStatusLabel(selectedReport.stats.completionPercentage) }}
+          </div>
+        </div>
+
+        <!-- Secondary Stats -->
+        <div class="secondary-stats">
+          <div class="stat-item">
+            <div class="stat-label">Current Streak</div>
+            <div class="stat-value streak">🔥 {{ selectedReport.stats.currentStreak }}</div>
+            <div class="detail-text">days</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Longest Streak</div>
+            <div class="stat-value">⭐ {{ selectedReport.stats.longestStreak }}</div>
+            <div class="detail-text">days</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Consistency</div>
+            <div class="stat-value">{{ selectedReport.stats.consistency }}%</div>
+            <div class="detail-text">of month completed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Breakdown -->
+      <div class="weekly-breakdown" *ngIf="getWeeklyBreakdown().length > 0">
+        <h4>Weekly Breakdown</h4>
+        <div class="weekly-grid">
+          <div class="weekly-item" *ngFor="let week of getWeeklyBreakdown()">
+            <div class="week-label">Week {{ week.week }}</div>
+            <div class="week-progress">
+              <div
+                class="week-progress-fill"
+                [style.width.%]="week.percentage"
+                [style.background-color]="getStatusColor(week.percentage)"
+              ></div>
+            </div>
+            <div class="week-stats">
+              <span>{{ week.completed }}/{{ week.total }}</span>
+              <span class="week-percentage">{{ week.percentage }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Message -->
+      <div class="summary-message">
+        <p *ngIf="selectedReport.stats.completionPercentage >= 90">
+          🎉 Excellent work! You're crushing this habit!
+        </p>
+        <p *ngIf="selectedReport.stats.completionPercentage >= 70 && selectedReport.stats.completionPercentage < 90">
+          👏 Great job! Keep up the momentum!
+        </p>
+        <p *ngIf="selectedReport.stats.completionPercentage >= 50 && selectedReport.stats.completionPercentage < 70">
+          ⚡ You're making good progress. Push a bit harder!
+        </p>
+        <p *ngIf="selectedReport.stats.completionPercentage >= 20 && selectedReport.stats.completionPercentage < 50">
+          💪 Keep going! Building habits takes time!
+        </p>
+        <p *ngIf="selectedReport.stats.completionPercentage < 20">
+          🌱 Small steps lead to big changes. Start today!
+        </p>
+      </div>
+    </div>
+
+    <!-- All Habits Summary -->
+    <div class="all-habits-summary">
+      <h3>All Habits Overview</h3>
+      <div class="habits-grid">
+        <div
+          class="habit-summary-card"
+          *ngFor="let report of reports"
+          [style.border-left]="'5px solid ' + (report.stats.completionPercentage >= 50 ? '#28a745' : '#dc3545')"
+        >
+          <h5>{{ report.habitName }}</h5>
+          <div class="mini-progress">
+            <div
+              class="mini-fill"
+              [style.width.%]="report.stats.completionPercentage"
+              [style.background-color]="getStatusColor(report.stats.completionPercentage)"
+            ></div>
+          </div>
+          <div class="mini-stats">
+            <span>{{ report.stats.completedDays }}/{{ report.stats.totalDays }}</span>
+            <span class="percentage">{{ report.stats.completionPercentage }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

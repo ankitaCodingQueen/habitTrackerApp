@@ -1,0 +1,85 @@
+<div class="daily-tracker">
+  <div class="header">
+    <h2>Daily Tracker</h2>
+  </div>
+
+  <div *ngIf="habits.length === 0" class="empty-state">
+    <p>No habits to track. Create a habit first!</p>
+  </div>
+
+  <div *ngIf="habits.length > 0" class="tracker-container">
+    <!-- Habit Selection -->
+    <div class="habit-selector">
+      <label for="habitSelect">Select Habit:</label>
+      <select
+        id="habitSelect"
+        [(ngModel)]="selectedHabitId"
+        (change)="selectHabit(selectedHabitId || '')"
+        class="habit-select"
+      >
+        <option *ngFor="let habit of habits" [value]="habit.id">
+          {{ habit.name }}
+        </option>
+      </select>
+
+      <div class="completion-stats" *ngIf="getSelectedHabit()">
+        <span class="stat">
+          <strong>{{ getCompletedCount() }}</strong> / {{ daysInMonth }} completed
+        </span>
+        <span class="percentage">
+          {{ daysInMonth > 0 ? Math.round((getCompletedCount() / daysInMonth) * 100) : 0 }}%
+        </span>
+      </div>
+    </div>
+
+    <!-- Calendar Navigation -->
+    <div class="calendar-nav">
+      <button class="btn btn-secondary" (click)="previousMonth()">← Previous</button>
+      <div class="month-display">
+        <h3>{{ currentMonth }} {{ currentYear }}</h3>
+        <button class="btn btn-small" (click)="goToToday()">Today</button>
+      </div>
+      <button class="btn btn-secondary" (click)="nextMonth()">Next →</button>
+    </div>
+
+    <!-- Calendar -->
+    <div class="calendar">
+      <!-- Day labels -->
+      <div class="calendar-header">
+        <div class="day-label" *ngFor="let label of dayLabels">
+          {{ label }}
+        </div>
+      </div>
+
+      <!-- Calendar days -->
+      <div class="calendar-body">
+        <div
+          class="calendar-day empty"
+          *ngFor="let day of calendarDays"
+          [ngClass]="{ 'empty': !day }"
+        >
+          <div *ngIf="day" class="day-content" (click)="toggleCompletion(day)">
+            <span class="day-number">{{ day }}</span>
+            <div
+              class="completion-indicator"
+              [ngClass]="{ 'completed': isCompleted(day) }"
+              [style.background-color]="getSelectedHabit()?.color"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color completed" [style.background-color]="getSelectedHabit()?.color"></div>
+        <span>Completed</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color incomplete"></div>
+        <span>Incomplete</span>
+      </div>
+    </div>
+  </div>
+</div>

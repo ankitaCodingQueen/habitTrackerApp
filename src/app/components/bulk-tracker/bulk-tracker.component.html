@@ -1,0 +1,102 @@
+<div class="bulk-tracker">
+  <div class="header">
+    <h2>Quick Log - All Habits</h2>
+    <p class="subtitle">Mark all your habits for the month at a glance</p>
+  </div>
+
+  <div *ngIf="habits.length === 0" class="empty-state">
+    <p>No habits to track. Create a habit first!</p>
+  </div>
+
+  <div *ngIf="habits.length > 0" class="tracker-container">
+    <!-- Calendar Navigation -->
+    <div class="calendar-nav">
+      <button class="btn btn-secondary" (click)="previousMonth()">← Previous</button>
+      <div class="month-display">
+        <h3>{{ currentMonth }} {{ currentYear }}</h3>
+        <button class="btn btn-small" (click)="goToToday()">Today</button>
+      </div>
+      <button class="btn btn-secondary" (click)="nextMonth()">Next →</button>
+    </div>
+
+    <!-- Bulk Tracker Grid -->
+    <div class="bulk-grid-container">
+      <!-- Header with day labels -->
+      <div class="grid-header">
+        <div class="habit-column-header">Habit</div>
+        <div class="day-header" *ngFor="let label of dayLabels">
+          {{ label }}
+        </div>
+        <div class="stats-column-header">Progress</div>
+      </div>
+
+      <!-- Habit rows -->
+      <div class="grid-row" *ngFor="let habit of habits">
+        <!-- Habit name -->
+        <div class="habit-column" [style.border-left]="'4px solid ' + habit.color">
+          <div class="habit-name">{{ habit.name }}</div>
+          <div class="habit-description" *ngIf="habit.description">
+            {{ habit.description }}
+          </div>
+        </div>
+
+        <!-- Day cells -->
+        <div
+          class="day-cell"
+          *ngFor="let day of calendarDays"
+          [ngClass]="{ 'disabled': !day }"
+        >
+          <div *ngIf="day" 
+            class="cell-content" 
+            (click)="toggleCompletion(habit.id, day)"
+            [ngClass]="{ 'completed': isCompleted(habit.id, day) }"
+            [style.background-color]="isCompleted(habit.id, day) ? habit.color : '#f5f5f5'"
+          >
+            <span class="day-number">{{ day }}</span>
+            <div *ngIf="isCompleted(habit.id, day)" class="checkmark">✓</div>
+          </div>
+        </div>
+
+        <!-- Progress stats -->
+        <div class="stats-column">
+          <div class="progress-info">
+            <span class="completed-count">{{ getHabitCompletedDays(habit.id) }}/{{ daysInMonth }}</span>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="getHabitCompletionPercentage(habit.id)"
+                [style.background-color]="habit.color"
+              ></div>
+            </div>
+            <span class="percentage">{{ getHabitCompletionPercentage(habit.id) }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box completed"></div>
+        <span>Completed</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box incomplete"></div>
+        <span>Not Done</span>
+      </div>
+      <p class="legend-tip">💡 Tip: Click on any day cell to mark a habit as complete or incomplete</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-stats">
+      <h3>Monthly Summary</h3>
+      <div class="stats-grid">
+        <div class="stat-card" *ngFor="let habit of habits">
+          <div class="stat-header" [style.color]="habit.color">{{ habit.name }}</div>
+          <div class="stat-value">{{ getHabitCompletionPercentage(habit.id) }}%</div>
+          <div class="stat-label">{{ getHabitCompletedDays(habit.id) }} days completed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

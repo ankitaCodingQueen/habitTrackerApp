@@ -1,0 +1,87 @@
+<div class="quick-log">
+  <div class="header">
+    <h2>Quick Log</h2>
+    <p class="subtitle">Check off habits for the entire month at a glance</p>
+  </div>
+
+  <div *ngIf="habits.length === 0" class="empty-state">
+    <p>No habits to log. Create a habit first!</p>
+  </div>
+
+  <div *ngIf="habits.length > 0" class="log-container">
+    <!-- Month Navigation -->
+    <div class="month-nav">
+      <button class="btn btn-secondary" (click)="previousMonth()">← Previous</button>
+      <h3>{{ currentMonth }}</h3>
+      <button class="btn btn-secondary" (click)="nextMonth()">Next →</button>
+      <button class="btn btn-small" (click)="goToToday()">Today</button>
+    </div>
+
+    <!-- Quick Log Table -->
+    <div class="log-table-wrapper">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th class="habit-col">Habit</th>
+            <th *ngFor="let day of dayLabels" class="day-header">{{ day }}</th>
+            <th class="progress-col">Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let habit of habits; let habitIndex = index">
+            <ng-container *ngFor="let week of getCalendarWeeks(); let weekIndex = index">
+              <tr class="habit-row">
+                <!-- Habit Name (only on first week) -->
+                <td class="habit-cell" *ngIf="weekIndex === 0" [attr.rowspan]="getCalendarWeeks().length">
+                  <div class="habit-name" [style.border-left]="'4px solid ' + habit.color">
+                    {{ habit.name }}
+                  </div>
+                </td>
+
+                <!-- Day Cells (aligned with day headers) -->
+                <td *ngFor="let day of week" class="day-cell">
+                  <div
+                    *ngIf="day"
+                    class="date-cell"
+                    [ngClass]="{ 'completed': isCompleted(habit.id, day), 'empty': !day }"
+                    (click)="toggleCompletion(habit.id, day)"
+                  >
+                    <span *ngIf="!isCompleted(habit.id, day)" class="date-number">{{ day }}</span>
+                    <span *ngIf="isCompleted(habit.id, day)" class="check-mark">✓</span>
+                  </div>
+                </td>
+
+                <!-- Progress (only on first week) -->
+                <td class="progress-cell" *ngIf="weekIndex === 0" [attr.rowspan]="getCalendarWeeks().length">
+                  <div class="progress-info">
+                    <div class="progress-percentage">{{ getCompletionPercentage(habit.id) }}%</div>
+                    <div class="progress-bar">
+                      <div
+                        class="progress-fill"
+                        [style.width.%]="getCompletionPercentage(habit.id)"
+                        [style.background-color]="habit.color"
+                      ></div>
+                    </div>
+                    <div class="progress-count">{{ getCompletedCount(habit.id) }}/{{ daysInMonth }}</div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box completed">✓</div>
+        <span>Completed</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box incomplete"></div>
+        <span>Incomplete</span>
+      </div>
+    </div>
+  </div>
+</div>
