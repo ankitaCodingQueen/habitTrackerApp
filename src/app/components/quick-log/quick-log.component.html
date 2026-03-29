@@ -14,7 +14,7 @@
       <button class="btn btn-secondary" (click)="previousMonth()">← Previous</button>
       <h3>{{ currentMonth }}</h3>
       <button class="btn btn-secondary" (click)="nextMonth()">Next →</button>
-      <button class="btn btn-small" (click)="goToToday()">Today</button>
+      <button class="btn btn-small" *ngIf="!isCurrentMonth()" (click)="goToToday()">Today</button>
     </div>
 
     <!-- Quick Log Table -->

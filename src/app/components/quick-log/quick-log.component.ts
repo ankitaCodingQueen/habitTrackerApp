@@ -51,6 +51,12 @@ export class QuickLogComponent implements OnInit {
     this.updateMonth();
   }
 
+  isCurrentMonth(): boolean {
+    const today = new Date();
+    return this.currentDate.getFullYear() === today.getFullYear() &&
+           this.currentDate.getMonth() === today.getMonth();
+  }
+
   getDateString(day: number): string {
     return `${this.currentYear}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }

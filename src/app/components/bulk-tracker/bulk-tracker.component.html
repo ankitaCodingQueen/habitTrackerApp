@@ -14,7 +14,7 @@
       <button class="btn btn-secondary" (click)="previousMonth()">← Previous</button>
       <div class="month-display">
         <h3>{{ currentMonth }} {{ currentYear }}</h3>
-        <button class="btn btn-small" (click)="goToToday()">Today</button>
+        <button class="btn btn-small" *ngIf="!isCurrentMonth()" (click)="goToToday()">Today</button>
       </div>
       <button class="btn btn-secondary" (click)="nextMonth()">Next →</button>
     </div>
