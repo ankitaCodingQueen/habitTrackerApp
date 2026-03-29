@@ -25,14 +25,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: ./habitTracker
 
       - name: Build for production
         run: npm run build -- --configuration production
-        working-directory: ./habitTracker
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./habitTracker/dist/habit-tracker
+          publish_dir: ./dist/habit-tracker
